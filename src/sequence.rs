@@ -187,6 +187,30 @@ impl_list!{0 A, 1 B, 2 C,}
 impl_list!{0 A, 1 B,}
 impl_list!{0 A,}
 
+impl<'a, 'b, T> Cons for &'a &'b T where &'b T: Cons {
+    type Head = <&'b T as Cons>::Head;
+    type Tail = <&'b T as Cons>::Tail;
+    fn uncons(self) -> (Self::Head, Self::Tail) {
+        (*self).uncons()
+    }
+}
+
+impl<'a, 'b, T> Cons for &'a mut &'b T where &'b T: Cons {
+    type Head = <&'b T as Cons>::Head;
+    type Tail = <&'b T as Cons>::Tail;
+    fn uncons(self) -> (Self::Head, Self::Tail) {
+        (*self).uncons()
+    }
+}
+
+impl<'b, 'a: 'b, T> Cons for &'a mut &'b mut T where &'b mut T: Cons {
+    type Head = <&'b mut T as Cons>::Head;
+    type Tail = <&'b mut T as Cons>::Tail;
+    fn uncons(self) -> (Self::Head, Self::Tail) {
+        (*self).uncons()
+    }
+}
+
 impl<T> First for T where T: Cons {
     type First = T::Head;
     fn first(self) -> Self::First {
